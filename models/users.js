@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Email is required"],
       unique: true,
-      lowercase: true, 
+      lowercase: true,
       match: [
         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
         "Please enter a valid email"
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters"],
-      select: false 
+      select: false
     },
     role: {
       type: String,
@@ -38,12 +38,10 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next(); 
+  if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
-  console.log("🔹 Hashed Password Before Saving:", this.password); 
   next();
 });
 
 const User = mongoose.model("User", userSchema);
-
 module.exports = User;

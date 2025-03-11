@@ -68,7 +68,6 @@
 //   deleteUserById,
 // };
 
-
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/users"); 
@@ -89,10 +88,7 @@ exports.signup = async (req, res, next) => {
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    console.log("🔹 Hashed Password Before Storing:", hashedPassword); 
-    
-    const user = await User.create({ name, email, password: hashedPassword, role });
+    const user = await User.create({ name, email, password, role });
 
     const token = signToken(user._id, user.role);
     res.status(201).json({ token, user });
@@ -100,6 +96,7 @@ exports.signup = async (req, res, next) => {
     next(error);
   }
 };
+
 
 exports.login = async (req, res, next) => {
   try {
@@ -111,7 +108,6 @@ exports.login = async (req, res, next) => {
     }
 
     const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
-    console.log("🔹 Retrieved User:", user);
 
     if (!user) {
       console.log("❌ Invalid credentials: User not found");
@@ -120,7 +116,7 @@ exports.login = async (req, res, next) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log("🔹 Stored Hashed Password:", user.password);
-    console.log("🔹 Password Match Result:", isPasswordValid); 
+    console.log("🔹 Password Match Result:", isPasswordValid);
 
     if (!isPasswordValid) {
       console.log("❌ Invalid credentials: Password mismatch");
@@ -145,6 +141,7 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
+
 
 exports.getUsers = async (req, res, next) => {
   try {
